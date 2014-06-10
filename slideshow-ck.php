@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Slideshow CK
- * Plugin URI: http://www.wp-pluginsck.com/en/wordpress-plugins/slideshow-ck
+ * Plugin URI: http://www.wp-pluginsck.com/plugins-wordpress/slideshow-ck
  * Description: Slideshow CK is a responsive slideshow plugin that show your images with nice effects.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Cédric KEIFLIN
  * Author URI: http://www.wp-pluginsck.com/
  * License: GPL2
@@ -38,12 +38,6 @@ class Slideshowck {
 
 			// manage ajax calls
 			add_action('wp_ajax_add_slide', array($this, 'ajax_add_slide'));
-
-			// load the needed class
-			if (!class_exists("CKfields")) {
-				require_once($this->plugindir . '/cklibrary/class-ckfields.php');
-			}
-			$this->ckfields = new CKfields();
 		}
 		// create the widget
 		add_action('widgets_init', array($this, 'create_slideshowck_widget'));
@@ -53,7 +47,9 @@ class Slideshowck {
 	 * Set some styles for the admin menu icon
 	 */
 	function set_admin_menu_image_position() {
-		echo '<style type="text/css">#toplevel_page_slideshowck_general .wp-menu-image > img { padding: 12px 0 0 !important; }</style>';
+		?>
+		<style type="text/css">#toplevel_page_slideshowck_general .wp-menu-image > img { padding: 12px 0 0 !important; }</style>
+		<?php
 	}
 
 	/**
@@ -304,7 +300,7 @@ class Slideshowck {
 							<div class="cksliderow">
 								<span class="ckslidelabel"><?php _e('Link url'); ?></span>
 								<img align="top" title="" style="float: none;" src="<?php echo $this->pluginurl; ?>/images/link.png">
-								<input class="ckslidelinktext" type="text" value="<?php echo $this->get_param('imglink', '', $options); ?>" name="ckslidelinktext0">
+								<input class="ckslidelinktext" type="text" value="<?php echo $this->get_param('imglink', '', $options); ?>" name="ckslidelinktext<?php echo $i; ?>">
 							</div>
 							<div class="cksliderow">
 								<span class="ckslidelabel"><?php _e('Target'); ?></span>
@@ -689,23 +685,22 @@ class Slideshowck {
 
 }
 
+// load the process
+$slideshowckClass = new Slideshowck();
+$slideshowckClass->init();
+
 if (!is_admin()) {
-	wp_enqueue_script('jquery');
 	/**
 	 * Render the slideshow in the page
 	 * 
 	 * @param integer $id the slideshow ID
 	 */
 	function do_slideshowck($id) {
-		wp_enqueue_script("jquery");
 		$slideshowckClass = new Slideshowck();
 		$slideshowckClass->render_slideshow($id);
 	}
 } else {
-	// load the process
-	$slideshowckClass = new Slideshowck();
-	$slideshowckClass->init();
-	
+
 	/**
 	 * Empty funtion to avoir to load a slideshow in the admin and avoid an error
 	 * 

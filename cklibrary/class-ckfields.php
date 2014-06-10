@@ -1,8 +1,8 @@
 <?php
 defined('ABSPATH') or die;
 
-if (!class_exists("CKfields")) :
-class CKfields {
+if (!class_exists("Slideshowck_CKfields")) :
+class Slideshowck_CKfields {
 
 	private $name, $id, $value, $classname, $optionsgroup, $isfiles, $attribs;
 
