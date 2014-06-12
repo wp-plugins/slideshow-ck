@@ -21,28 +21,32 @@ class slideshowck_widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $defaults );
 		$slideshowck_id = $instance['slideshowck_id'];
 		// load the needed class
-		if (!class_exists("Slideshowck_CKfields")) {
-			require_once($this->plugindir . '/cklibrary/class-ckfields.php');
-		}
-		$this->ckfields = new Slideshowck_CKfields();
+		// if (!class_exists("Slideshowck_CKfields")) {
+			// require_once($this->plugindir . '/cklibrary/class-ckfields.php');
+		// }
+		// $this->ckfields = new Slideshowck_CKfields();
 		$posts_slideshowck_id = get_posts( array(
 			'numberposts' => -1, // we want to retrieve all of the posts
 			'post_type' => 'slideshowck'
 		) );
 		$options_slideshowck_id = array();
-		foreach ( $posts_slideshowck_id as $slideshow ) {
-			$options_slideshowck_id[ $slideshow->ID ] = $slideshow->post_name;
-		}
+		// foreach ( $posts_slideshowck_id as $slideshow ) {
+			// $options_slideshowck_id[ $slideshow->ID ] = $slideshow->post_name;
+		// }
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_name('slideshowck_id') ?>"><?php _e('Select the slideshow to load') ?> :</label>
 			<br />
+			<select name="<?php echo $this->get_field_name('slideshowck_id') ?>">
+				<?php foreach ( $posts_slideshowck_id as $slideshow ) { ?>
+					<option value="<?php echo (int) $slideshow->ID ?>" <?php selected( esc_attr( $slideshowck_id ), $slideshow->ID ); ?>><?php echo $slideshow->post_name ?></option>
+				<?php } ?>>
+			</select>
 			<?php
-			echo $this->ckfields->get('select', $this->get_field_name('slideshowck_id'), esc_attr( $slideshowck_id ), '', $options_slideshowck_id);
+			//echo $this->ckfields->get('select', $this->get_field_name('slideshowck_id'), esc_attr( $slideshowck_id ), '', $options_slideshowck_id);
 			?>
 		</p>
 		<?php
-		return 'noform';
 	}
 	
 	/** Update a particular instance.
@@ -70,6 +74,15 @@ class slideshowck_widget extends WP_Widget {
 	 * @param array $instance The settings for the particular instance of the widget
 	 */
 	function widget($args, $instance) {
+		$title = apply_filters( 'widget_title', $instance['title'] );
+		// before and after widget arguments are defined by themes
+		echo $args['before_widget'];
+		if ( ! empty( $title ) ) {
+			echo $args['before_title'] . $title . $args['after_title'];
+		}
+	 
+		// This is where you run the code and display the output
 		do_slideshowck($instance['slideshowck_id']);
+		echo $args['after_widget'];
 	}
 }
