@@ -3,7 +3,7 @@
  * Plugin Name: Slideshow CK
  * Plugin URI: http://www.wp-pluginsck.com/plugins-wordpress/slideshow-ck
  * Description: Slideshow CK is a responsive slideshow plugin that show your images with nice effects.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Cédric KEIFLIN
  * Author URI: http://www.wp-pluginsck.com/
  * License: GPL2
@@ -618,7 +618,7 @@ class Slideshowck {
 		  } */
 		wp_enqueue_script('jquery-easing', $this->pluginurl . '/assets/jquery.easing.1.3.js');
 		wp_enqueue_script('jquery-mobile', $this->pluginurl . '/assets/jquery.mobile.customized.min.js');
-		wp_enqueue_script('camerack', $this->pluginurl . '/assets/camera_1.3.8.js');
+		wp_enqueue_script('slideshowck', $this->pluginurl . '/assets/camera_1.3.8.js');
 		?>
 		<script type="text/javascript"> <!--
 			jQuery(function() {
@@ -685,9 +685,9 @@ class Slideshowck {
 
 }
 
-// load the process
-$slideshowckClass = new Slideshowck();
-$slideshowckClass->init();
+function Slideshowck_loadjquery() {
+	wp_enqueue_script('jquery');
+}
 
 if (!is_admin()) {
 	/**
@@ -699,8 +699,13 @@ if (!is_admin()) {
 		$slideshowckClass = new Slideshowck();
 		$slideshowckClass->render_slideshow($id);
 	}
+	
+	// load jquery in frontend
+	add_action('init', 'Slideshowck_loadjquery');
 } else {
-
+	// load the process
+	$slideshowckClass = new Slideshowck();
+	$slideshowckClass->init();
 	/**
 	 * Empty funtion to avoir to load a slideshow in the admin and avoid an error
 	 * 
