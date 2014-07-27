@@ -6,14 +6,6 @@ if (!current_user_can('manage_options')) {
 	wp_die(__('You do not have sufficient permissions to access this page.'));
 }
 
-// add the needed classes
-if (!class_exists("CKfolder"))
-	require_once($this->plugindir . '/cklibrary/class-ckfolder.php');
-
-if (!class_exists("Slideshowck_CKfields"))
-	require($this->plugindir . '/cklibrary/class-ckfields.php');
-$this->ckfields = new Slideshowck_CKfields();
-
 // load scripts
 wp_enqueue_media();
 wp_enqueue_script('jquery');
@@ -42,7 +34,7 @@ if (isset($_GET['id'])) {
 if ($post_id) {
 	$post = get_post($post_id);
 }
-// var_dump($post);
+
 if ($post) {
 	$post_type = $post->post_type;
 }
@@ -78,6 +70,7 @@ if (!empty($_REQUEST['action']) && isset($post_id)) {
 }
 // get the settings for the post
 $this->params = json_decode(str_replace('|qq|', '"', get_post_meta((int) $post_id, 'slideshow-ck-params', TRUE)));
+if ($this->ispro) $this->pro_class->params = $this->params;
 $post_title = isset( $post->post_title ) ? $post->post_title : '';
 ?>
 <?php //echo $CK_Notices; // TODO : creer notices pour dire "bien enregistre"  ?>
@@ -105,12 +98,18 @@ $post_title = isset( $post->post_title ) ? $post->post_title : '';
 	<div class="menulinkck" tab="tab_effects"><?php echo _e('Effects'); ?></div>
 	<div class="clr"></div>
 	<div class="tabck menustyles current" id="tab_images">
-		<input type="hidden" name="slides_sources" id="slides_sources" value="slidemanager" />
+		<!--<input type="hidden" name="slides_sources" id="slides_sources" value="slidemanager" />-->
+		<div class="saveparam">
 		<?php
-		// TODO : pour version pro offrir choix source des slides
-		///$options_slides_sources = array('slidemanager' => __('Slides Manager'), 'autoloadfolder' => __('Autoload from a folder'));
-		//echo $this->get_field('select', 'slides_sources', $this->get_param('slides_sources'), 'slideshowckparams', $options_slides_sources, false, 'onchange="show_slides_sources();"');
+		if ($this->ispro) {
+			$options_slides_sources = array('slidemanager' => __('Slides Manager'), 'autoloadfolder' => __('Autoload from a folder'));
+			echo $this->get_field('select', 'slides_sources', $this->get_param('slides_sources', 'slidemanager'), 'slideshowckparams', $options_slides_sources, false, 'onchange="show_slides_sources();"');
+		} else { ?>
+			<input type="hidden" name="slides_sources" id="slides_sources" value="slidemanager" />
+		<?php
+		}
 		?>
+		</div>
 		<div class="slides_source" data-source="slidemanager">
 			<div id="ckslides">
 				<input name="ckaddslide" id="ckaddslide" type="button" value="<?php _e('Add a Slide') ?>" class="button button-secondary" onclick="addslideck();"/>
@@ -128,8 +127,12 @@ $post_title = isset( $post->post_title ) ? $post->post_title : '';
 			</div>
 			<input name="ckaddslide" id="ckaddslide1" type="button" value="<?php _e('Add a Slide') ?>" class="button button-secondary" onclick="addslideck();"/>
 		</div>
-		<div class="slides_source" data-source="autoloadfolder">
-			<?php //echo __('You need the Pro version to use this feature'); ?>
+		<div class="slides_source saveparam" data-source="autoloadfolder">
+			<?php 
+			if ($this->ispro) {
+				$this->pro_class->render_autoload_from_folder_option();
+			}
+			?>
 		</div>
 	</div>
 	<div class="tabck menustyles saveparam" id="tab_styles">

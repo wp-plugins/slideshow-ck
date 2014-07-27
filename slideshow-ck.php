@@ -3,16 +3,17 @@
  * Plugin Name: Slideshow CK
  * Plugin URI: http://www.wp-pluginsck.com/plugins-wordpress/slideshow-ck
  * Description: Slideshow CK is a responsive slideshow plugin that show your images with nice effects.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: Cédric KEIFLIN
  * Author URI: http://www.wp-pluginsck.com/
  * License: GPL2
  */
 defined('ABSPATH') or die;
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
 class Slideshowck {
 
-	public $pluginname, $pluginurl, $plugindir, $options, $settings, $settings_field, $ispro, $prourl, $params;
+	public $pluginname, $pluginurl, $plugindir, $options, $settings, $settings_field, $ispro, $prourl, $pro_class, $params, $ckfields;
 	public $default_settings = array();
 
 	function __construct() {
@@ -22,9 +23,21 @@ class Slideshowck {
 		$this->settings_field = 'slideshow-ck_options';
 		$this->options = get_option($this->settings_field);
 		$this->prourl = 'http://www.wp-pluginsck.com/en/wordpress-plugins/slideshow-ck';
+		// add the needed classes
+		if (!class_exists("CKfolder"))
+			require($this->plugindir . '/cklibrary/class-ckfolder.php');
+
+		if (!class_exists("Slideshowck_CKfields"))
+			require($this->plugindir . '/cklibrary/class-ckfields.php');
+		$this->ckfields = new Slideshowck_CKfields();
 	}
 
 	function init() {
+		if ( file_exists(WP_PLUGIN_DIR . '/slideshow-ck-pro-addon/slideshow-ck-pro-addon.php') && is_plugin_active('slideshow-ck-pro-addon/slideshow-ck-pro-addon.php') ) {
+			require(WP_PLUGIN_DIR . '/slideshow-ck-pro-addon/slideshow-ck-pro-addon.php');
+			$this->ispro = true;
+			$this->pro_class = new SlideshowckProAddon();
+		}
 
 		if (is_admin()) {
 			// load the main admin menu items
@@ -34,7 +47,7 @@ class Slideshowck {
 			add_action('init', array($this, 'create_post_type'));
 
 			// add the get pro link in the plugins list
-//			add_filter('plugin_action_links', array($this, 'show_pro_message_action_links'), 10, 2);
+			add_filter('plugin_action_links', array($this, 'show_pro_message_action_links'), 10, 2);
 
 			// manage ajax calls
 			add_action('wp_ajax_add_slide', array($this, 'ajax_add_slide'));
@@ -306,12 +319,21 @@ class Slideshowck {
 								<span class="ckslidelabel"><?php _e('Target'); ?></span>
 								<img align="top" title="" style="float: none;" src="<?php echo $this->pluginurl; ?>/images/link_go.png">
 								<?php
-								$options_ckslidetargettext = array(
-									'default' => __('Default')
-									, '_parent' => __('Open in the same window')
-									, '_blank' => __('Open in a new window')
-										// , 'lightbox'=>__('Open in a Lightbox')
-								);
+								if ($this->ispro) {
+									$options_ckslidetargettext = array(
+										'default' => __('Default')
+										, '_parent' => __('Open in the same window')
+										, '_blank' => __('Open in a new window')
+										, 'lightbox'=>__('Open in a Lightbox')
+									);
+								} else {
+									$options_ckslidetargettext = array(
+										'default' => __('Default')
+										, '_parent' => __('Open in the same window')
+										, '_blank' => __('Open in a new window')
+											// , 'lightbox'=>__('Open in a Lightbox')
+									);
+								}
 								echo $this->get_field('select', 'ckslidetargettext' . $i, $this->get_param('imgtarget', '', $options), 'ckslidetargettext', $options_ckslidetargettext);
 								?>
 							</div>
@@ -357,6 +379,7 @@ class Slideshowck {
 		if ( $params === null ) {
 			$params = $this->params;
 		}
+		
 		if (isset($params->$key)) {
 			return $params->$key;
 		} else {
@@ -484,12 +507,13 @@ class Slideshowck {
 	}
 
 	function render_slideshow($id) {
+		$params = json_decode(str_replace('|qq|', '"', get_post_meta($id, 'slideshow-ck-params', TRUE)));
+		$this->params = $params;
+		
 		$items = $this->get_items($id);
 		if ($this->get_param('displayorder', 'normal') == 'shuffle') {
 			shuffle($items);
 		}
-		$params = json_decode(str_replace('|qq|', '"', get_post_meta($id, 'slideshow-ck-params', TRUE)));
-		$this->params = $params;
 		$width = ($this->get_param('width') AND $this->get_param('width') != 'auto') ? ' style="width:' . $this->test_unit($this->get_param('width')) . ';"' : '';
 		$this->load_slideshow_assets($id);
 		?>
@@ -672,17 +696,28 @@ class Slideshowck {
 		<?php
 	}
 
-	function get_items($id) {
+	/**
+	 * Get the items depending on the option selected in the slideshow
+	 * 
+	 * @param integer $id the slideshowck post ID
+	 * @return array of objects
+	 */
+	protected function get_items($id) {
+		if ( isset($this->pro_class) ) {
+			$this->pro_class->params = $this->params;
+		}
 		switch ( $this->get_param('slides_sources') ) {
 			case 'slidesmanager':
 			default:
 				$items = json_decode(str_replace('|qq|', '"', get_post_meta($id, 'slideshow-ck-slides', TRUE)));
 				break;
+			case 'autoloadfolder':
+				$items = $this->pro_class->get_items_autoloadfolder($id);
+				break;
 		}
 
 		return $items;
 	}
-
 }
 
 function Slideshowck_loadjquery() {
@@ -696,7 +731,9 @@ if (!is_admin()) {
 	 * @param integer $id the slideshow ID
 	 */
 	function do_slideshowck($id) {
+		add_thickbox();
 		$slideshowckClass = new Slideshowck();
+		$slideshowckClass->init();
 		$slideshowckClass->render_slideshow($id);
 	}
 	

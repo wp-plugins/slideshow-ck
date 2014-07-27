@@ -299,8 +299,7 @@ h2 .small {
 
 .placeholder {
 	border: 1px dashed #3399ff;
-	/*margin: 0;
-	padding: 0;*/
+	min-height: 100px;
 }
 
 
