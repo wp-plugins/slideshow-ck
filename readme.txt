@@ -3,7 +3,7 @@ Contributors: ced1870
 Tags: slideshow, image, diaporama
 Requires at least: 3.0
 Tested up to: 3.9
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 
 Slideshow CK is a responsive slideshow plugin that shows your images with nice effects.
@@ -23,6 +23,10 @@ Slideshow CK can display your images or videos with nice effects. It is compatib
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.5 =
+* Fix an issue with the slideshow position in the content
+* Fix an issue with the widget display
 
 = 1.0.4 =
 * Added the Slideshow CK Pro Addon features

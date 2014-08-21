@@ -3,7 +3,7 @@
  * Plugin Name: Slideshow CK
  * Plugin URI: http://www.wp-pluginsck.com/plugins-wordpress/slideshow-ck
  * Description: Slideshow CK is a responsive slideshow plugin that show your images with nice effects.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Cédric KEIFLIN
  * Author URI: http://www.wp-pluginsck.com/
  * License: GPL2
@@ -516,6 +516,7 @@ class Slideshowck {
 		}
 		$width = ($this->get_param('width') AND $this->get_param('width') != 'auto') ? ' style="width:' . $this->test_unit($this->get_param('width')) . ';"' : '';
 		$this->load_slideshow_assets($id);
+		ob_start();
 		?>
 		<div class="slideshowck camera_wrap <?php echo $this->get_param('skin'); ?>" id="camera_wrap_<?php echo $id; ?>"<?php echo $width; ?>>
 			<?php
@@ -579,6 +580,9 @@ class Slideshowck {
 		</div>
 		<div style="clear:both;"></div>
 		<?php
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
 	}
 
 	function get_item_data($item) {
@@ -724,6 +728,10 @@ function Slideshowck_loadjquery() {
 	wp_enqueue_script('jquery');
 }
 
+// load the process
+$slideshowckClass = new Slideshowck();
+$slideshowckClass->init();
+
 if (!is_admin()) {
 	/**
 	 * Render the slideshow in the page
@@ -731,25 +739,34 @@ if (!is_admin()) {
 	 * @param integer $id the slideshow ID
 	 */
 	function do_slideshowck($id) {
+		echo get_slideshowck($id);
+	}
+
+	/**
+	* Get the slideshow 
+	* 
+	* @param integer $id the slideshow ID
+	*/
+	function get_slideshowck($id) {
 		add_thickbox();
 		$slideshowckClass = new Slideshowck();
-		$slideshowckClass->init();
-		$slideshowckClass->render_slideshow($id);
+		return $slideshowckClass->render_slideshow($id);
 	}
 	
 	// load jquery in frontend
 	add_action('init', 'Slideshowck_loadjquery');
 } else {
-	// load the process
-	$slideshowckClass = new Slideshowck();
-	$slideshowckClass->init();
 	/**
-	 * Empty funtion to avoir to load a slideshow in the admin and avoid an error
+	 * Empty functiosn to avoid to load a slideshow in the admin and avoid an error if the function is called
 	 * 
 	 * @param integer $id the slideshow ID
 	 * @return type
 	 */
 	function do_slideshowck($id) {
+		return;
+	}
+	
+	function get_slideshowck($id) {
 		return;
 	}
 }
@@ -765,7 +782,7 @@ add_shortcode( 'slideshowck', 'shortcode_slideshowck' );
  */
 function shortcode_slideshowck($attr) {
 	if ( isset($attr['id']) ) {
-		return do_slideshowck( (int) $attr['id'] );
+		return get_slideshowck( (int) $attr['id'] );
 	}
 	return null;
 }

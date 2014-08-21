@@ -20,19 +20,11 @@ class slideshowck_widget extends WP_Widget {
 		$defaults = array( 'slideshowck_id' => '' );
 		$instance = wp_parse_args( (array) $instance, $defaults );
 		$slideshowck_id = $instance['slideshowck_id'];
-		// load the needed class
-		// if (!class_exists("Slideshowck_CKfields")) {
-			// require_once($this->plugindir . '/cklibrary/class-ckfields.php');
-		// }
-		// $this->ckfields = new Slideshowck_CKfields();
 		$posts_slideshowck_id = get_posts( array(
 			'numberposts' => -1, // we want to retrieve all of the posts
 			'post_type' => 'slideshowck'
 		) );
 		$options_slideshowck_id = array();
-		// foreach ( $posts_slideshowck_id as $slideshow ) {
-			// $options_slideshowck_id[ $slideshow->ID ] = $slideshow->post_name;
-		// }
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_name('slideshowck_id') ?>"><?php _e('Select the slideshow to load') ?> :</label>
