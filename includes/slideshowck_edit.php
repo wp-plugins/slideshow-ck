@@ -250,8 +250,6 @@ $post_title = isset( $post->post_title ) ? $post->post_title : '';
 			<img class="iconck" src="<?php echo $this->pluginurl ?>/images/height.png" />
 			<input id="thumbnailheight" name="thumbnailheight" type="text" value="<?php echo $this->get_param('thumbnailheight') ?>" >
 		</div>
-		<!--<div class="ckaccordion_toggler open" onclick="jQuery('+ .ckaccordion_options', jQuery(this)).toggle('fast');jQuery(this).toggleClass('open');"><?php //_e('Caption Styles')  ?></div>-->
-		<div class="ckaccordion_options">
 			<div class="ckheading"><?php _e('Caption Title'); ?></div>
 			<div>
 				<label for="captiontitle_color"><?php _e('Title Color'); ?></label>
@@ -385,7 +383,6 @@ $post_title = isset( $post->post_title ) ? $post->post_title : '';
 				echo $this->get_field('radio', 'caption_shadowinset', $this->get_param('caption_shadowinset'), '', $optionsboxshadowinset);
 				?>
 			</div>
-		</div>
 	</div>
 	<div class="tabck menustyles saveparam" id="tab_effects">
 		<div>

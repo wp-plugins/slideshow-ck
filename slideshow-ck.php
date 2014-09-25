@@ -3,7 +3,7 @@
  * Plugin Name: Slideshow CK
  * Plugin URI: http://www.wp-pluginsck.com/plugins-wordpress/slideshow-ck
  * Description: Slideshow CK is a responsive slideshow plugin that show your images with nice effects.
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Cédric KEIFLIN
  * Author URI: http://www.wp-pluginsck.com/
  * License: GPL2
@@ -192,7 +192,7 @@ class Slideshowck {
 
 	function show_pro_message_action_links($links, $file) {
 		if ($file == plugin_basename(__FILE__)) {
-			array_push($links, '<a href="options-general.php?page=' . $this->pluginname . '">' . __('Settings') . '</a>');
+			//array_push($links, '<a href="options-general.php?page=' . $this->pluginname . '">' . __('Settings') . '</a>');
 			if (!$this->ispro) {
 				array_push($links, '<br /><img class="iconck" src="' . $this->pluginurl . '/images/star.png" /><a target="_blank" href="' . $this->prourl . '">' . __('Get the PRO Version') . '</a>');
 			} else {
