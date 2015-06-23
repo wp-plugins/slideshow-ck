@@ -24,6 +24,9 @@ Slideshow CK can display your images or videos with nice effects. It is compatib
 
 == Changelog ==
 
+= 1.0.7 =
+* Fix some JS issues
+
 = 1.0.6 =
 * Fix an issue with the admin fields alignment
 
