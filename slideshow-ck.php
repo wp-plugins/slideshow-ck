@@ -3,7 +3,7 @@
  * Plugin Name: Slideshow CK
  * Plugin URI: http://www.wp-pluginsck.com/plugins-wordpress/slideshow-ck
  * Description: Slideshow CK is a responsive slideshow plugin that show your images with nice effects.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: Cédric KEIFLIN
  * Author URI: http://www.wp-pluginsck.com/
  * License: GPL2
@@ -659,10 +659,10 @@ class Slideshowck {
 					loader: '<?php echo $this->get_param('loader', 'pie') ?>',
 					pagination: <?php echo $this->get_param('pagination', '1') ?>,
 					thumbnails: <?php echo $this->get_param('thumbnails', '1') ?>,
-					thumbheight: <?php echo $this->get_param('thumbnailheight', '100') ?>,
-					thumbwidth: <?php echo $this->get_param('thumbnailwidth', '75') ?>,
-					time: <?php echo $this->get_param('time', '7000') ?>,
-					transPeriod: <?php echo $this->get_param('transperiod', '1500') ?>,
+					thumbheight: '<?php echo $this->get_param('thumbnailheight', '100') ?>',
+					thumbwidth: '<?php echo $this->get_param('thumbnailwidth', '75') ?>',
+					time: '<?php echo $this->get_param('time', '7000') ?>',
+					transPeriod: '<?php echo $this->get_param('transperiod', '1500') ?>',
 					alignment: '<?php echo $this->get_param('alignment', 'center') ?>',
 					autoAdvance: <?php echo $this->get_param('autoAdvance', '1') ?>,
 					mobileAutoAdvance: <?php echo $this->get_param('autoAdvance', '1') ?>,
